@@ -1,6 +1,7 @@
 package com.ninos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ninos.dto.PostDto;
 import com.ninos.model.Post;
 import com.ninos.repository.PostRepository;
 import org.hamcrest.CoreMatchers;
@@ -45,24 +46,47 @@ class BlogRestApiApplicationTests {
 	}
 
 
-	@DisplayName("create a new post")
+	@DisplayName("Create New Post")
 	@Test
-	public void createPost() throws Exception {
+	public void createPostController() throws Exception {
 		// given
-		Post post = new Post("java","Explain all java concepts","Java For Beginner");
+		PostDto postDto = new PostDto("java","Explain all java concepts","Java For Beginner");
 
 		// when
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("http://8080/api/v1/posts")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(post)));
+				.content(objectMapper.writeValueAsString(postDto)));
 
 		// then
 		response.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isCreated())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.title", CoreMatchers.is(post.getTitle())))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(post.getDescription())))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.content", CoreMatchers.is(post.getContent())));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.title", CoreMatchers.is(postDto.getTitle())))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(postDto.getDescription())))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.content", CoreMatchers.is(postDto.getContent())));
 
 	}
+
+
+
+    @DisplayName("Get All Posts From Database")
+	@Test
+	public void getAllPostsController() throws Exception{
+		// given
+		List<Post> list = new ArrayList<>();
+		list.add(new Post("java","learn java for beginner","java concepts"));
+		list.add(new Post("c++","learn c++ for beginner","c++ concepts"));
+		postRepository.saveAll(list);
+
+		// when
+		ResultActions response = mockMvc.perform(get("http://8080/api/v1/posts"));
+
+		// then
+		response.andExpect(MockMvcResultMatchers.status().isOk())
+				.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(list.size())));
+	}
+
+
+
 
 }
