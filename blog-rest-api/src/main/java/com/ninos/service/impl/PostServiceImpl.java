@@ -1,6 +1,7 @@
 package com.ninos.service.impl;
 
 import com.ninos.dto.PostDto;
+import com.ninos.exception.ResourceNotFoundException;
 import com.ninos.model.Post;
 import com.ninos.repository.PostRepository;
 import com.ninos.service.PostService;
@@ -33,6 +34,35 @@ public class PostServiceImpl implements PostService {
     public List<PostDto> getAllPost() {
         List<Post> posts = postRepository.findAll();
         return posts.stream().map(temp -> mapToDTO(temp)).collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public PostDto getPostById(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+        return mapToDTO(post);
+    }
+
+
+
+    @Override
+    public PostDto updatePost(PostDto postDto, Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+
+        post.setTitle(postDto.getTitle());
+        post.setDescription(postDto.getDescription());
+        post.setContent(postDto.getContent());
+
+        Post updatedPost = postRepository.save(post);
+        return mapToDTO(updatedPost);
+
+    }
+
+    @Override
+    public void deletePostById(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+        postRepository.delete(post);
     }
 
 
