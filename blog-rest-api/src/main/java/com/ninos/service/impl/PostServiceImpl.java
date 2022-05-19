@@ -1,11 +1,16 @@
 package com.ninos.service.impl;
 
 import com.ninos.dto.PostDto;
+import com.ninos.dto.PostResponse;
 import com.ninos.exception.ResourceNotFoundException;
 import com.ninos.model.Post;
 import com.ninos.repository.PostRepository;
 import com.ninos.service.PostService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,9 +36,32 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<PostDto> getAllPost() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream().map(temp -> mapToDTO(temp)).collect(Collectors.toList());
+    public PostResponse getAllPost(int pageNo, int pageSize, String sortBy, String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()  // if sort is asc then return asc
+                : Sort.by(sortBy).descending();
+
+        // create Pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+//        List<Post> posts = postRepository.findAll();
+          Page<Post> posts = postRepository.findAll(pageable);
+
+          // get content for page object
+          List<Post> listOfPosts = posts.getContent();
+
+//        return posts.stream().map(temp -> mapToDTO(temp)).collect(Collectors.toList());
+          List<PostDto> content = listOfPosts.stream().map(temp -> mapToDTO(temp)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+        return postResponse;
+
     }
 
 

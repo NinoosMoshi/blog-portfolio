@@ -1,14 +1,14 @@
 package com.ninos.controller;
 
 import com.ninos.dto.PostDto;
+import com.ninos.dto.PostResponse;
 import com.ninos.service.PostService;
+import com.ninos.utils.AppConstants;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -27,12 +27,15 @@ public class PostController {
 
 
     // get all Posts
-    @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts(){
-      List<PostDto> listPosts = postService.getAllPost();
-      return new ResponseEntity<>(listPosts,HttpStatus.OK);
+    @GetMapping()
+    public PostResponse getAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+    ){
+      return postService.getAllPost(pageNo,pageSize, sortBy,sortDir);
     }
-
 
     // get Post by id
     @GetMapping("/{id}")
