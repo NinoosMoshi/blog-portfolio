@@ -1,19 +1,18 @@
 package com.ninos.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+import lombok.Data;
+
+import java.util.Set;
+
+
 @Data
 public class PostDto {
     private Long id;
     private String title;
     private String description;
     private String content;
+    private Set<CommentDTO> comments;
 
-    public PostDto(String title, String description, String content) {
-        this.title = title;
-        this.description = description;
-        this.content = content;
-    }
+
 }

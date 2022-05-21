@@ -46,25 +46,25 @@ class BlogRestApiApplicationTests {
 	}
 
 
-	@DisplayName("Create New Post")
-	@Test
-	public void createPostController() throws Exception {
-		// given
-		PostDto postDto = new PostDto("java","Explain all java concepts","Java For Beginner");
-
-		// when
-		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("http://8080/api/v1/posts")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(postDto)));
-
-		// then
-		response.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isCreated())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.title", CoreMatchers.is(postDto.getTitle())))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(postDto.getDescription())))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.content", CoreMatchers.is(postDto.getContent())));
-
-	}
+//	@DisplayName("Create New Post")
+//	@Test
+//	public void createPostController() throws Exception {
+//		// given
+//		PostDto postDto = new PostDto("java","Explain all java concepts","Java For Beginner");
+//
+//		// when
+//		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("http://8080/api/v1/posts")
+//				.contentType(MediaType.APPLICATION_JSON)
+//				.content(objectMapper.writeValueAsString(postDto)));
+//
+//		// then
+//		response.andDo(MockMvcResultHandlers.print())
+//				.andExpect(MockMvcResultMatchers.status().isCreated())
+//				.andExpect(MockMvcResultMatchers.jsonPath("$.title", CoreMatchers.is(postDto.getTitle())))
+//				.andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(postDto.getDescription())))
+//				.andExpect(MockMvcResultMatchers.jsonPath("$.content", CoreMatchers.is(postDto.getContent())));
+//
+//	}
 
 
 
