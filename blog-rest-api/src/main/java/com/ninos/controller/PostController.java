@@ -7,7 +7,10 @@ import com.ninos.utils.AppConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @AllArgsConstructor
@@ -19,8 +22,9 @@ public class PostController {
 
 
     // create Blog Post
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<PostDto> createNewPost(@RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> createNewPost(@Valid @RequestBody PostDto postDto){
         PostDto newPostDto = postService.createPost(postDto);
         return new ResponseEntity<>(newPostDto, HttpStatus.CREATED);
     }
@@ -45,14 +49,16 @@ public class PostController {
 
 
     // update Post
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable("id") Long id){
+    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable("id") Long id){
          PostDto postResponse = postService.updatePost(postDto, id);
          return new ResponseEntity<>(postResponse,HttpStatus.OK);
     }
 
 
     // delete Post
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
         postService.deletePostById(id);
