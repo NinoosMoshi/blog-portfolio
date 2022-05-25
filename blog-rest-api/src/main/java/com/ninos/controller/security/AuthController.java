@@ -1,11 +1,13 @@
 package com.ninos.controller.security;
 
+import com.ninos.dto.security.JWTAuthResponse;
 import com.ninos.dto.security.LoginDTO;
 import com.ninos.dto.security.SignUpDTO;
 import com.ninos.model.security.Role;
 import com.ninos.model.security.User;
 import com.ninos.repository.security.RoleRepository;
 import com.ninos.repository.security.UserRepository;
+import com.ninos.security.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +33,19 @@ public class AuthController {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider tokenProvider;
 
 
     @PostMapping("/signin")
-    public ResponseEntity<String> loginUser(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<JWTAuthResponse> loginUser(@RequestBody LoginDTO loginDTO){
       Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
+
+        // get token form tokenProvider
+        String token = tokenProvider.generateToken(authenticate);
+        return ResponseEntity.ok(new JWTAuthResponse(token));
     }
 
 
